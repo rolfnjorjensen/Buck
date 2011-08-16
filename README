@@ -1,1 +1,9 @@
 Buck is the simplest complex collaboration tool you could imagine. And everything deletes itself - just as in real life :)
+
+initial setup instructions:
+
+1) elasticsearch 0.15.0, apache with mod_rewrite and php >=5.3.0
+2) php -f elasticsearch_setup.php
+3) fill out email/password/domain in secret.php (superadmin needed for the provisioning api)
+4) php -f getmembers.php
+5) get cracking with the REST API
