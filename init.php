@@ -4,6 +4,8 @@ error_reporting( -1 );
 
 define('BUCK_ID_LEN', 3);
 
+define('BUCK_MAX_SIZE', 50000); //size of queries
+
 class ItemStatus {
 	const Incoming = 1;
 	const Accepted = 2;

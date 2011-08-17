@@ -2,7 +2,7 @@
 
 require_once('init.php');
 class BuckServer {
-	private static $es;
+	private static $es; //elastic search wrapper
 	/**
 	 * process the incoming REST request
 	*/
@@ -59,11 +59,10 @@ class BuckServer {
 					}	
 				}
 				$aBucket['bucketId'] = $bucketId = self::nextId('bucket');
-				$aBucket = json_encode( $aBucket );
 				/**
 				 * @todo store json file somewhere
 				*/
-				$result = self::$es->add('bucket',$bucketId,$aBucket);
+				$result = self::$es->add('bucket',$bucketId,json_encode( $aBucket ));
 				if ( $result !== NULL && $result->ok == true ) {
 					return $result->_id;
 				} else {
@@ -97,12 +96,21 @@ class BuckServer {
 					}
 				}
 			break;
-			//get bucket
+			//get bucket(s)
 			case 'get':
 				if ( !empty($r['request'][1]) ) {
 					$bucket = self::$es->query( 'bucket', array('q'=>'bucketId:'.$r['request'][1] ));
 					if ( $bucket->hits->total === 1 ) {
 						return $bucket->hits->hits[0]->_source;
+					}
+				} else {
+					$_buckets = self::$es->query( 'bucket', array('q'=>'_type:bucket','size'=>BUCK_MAX_SIZE ));
+					if ( $_buckets->hits->total > 0 ) {
+						$buckets = array();
+						foreach ( $_buckets->hits->hits as $bucket ) {
+							$buckets[] = $bucket->_source;
+						}
+						return $buckets;
 					}
 				}
 				return -1;
@@ -210,12 +218,10 @@ class BuckServer {
 					$anItem['created'] = time();
 					$anItem['status'] = ItemStatus::Incoming;
 					$anItem['itemId'] = $itemId = self::nextId('item');
-					$anItem = json_encode( $anItem );
 					/**
 					 * @todo store json file somewhere
 					*/
-					echo '$result = self::$es->add(\'item\','.$itemId.','.$anItem.');'."\n";
-					$result = self::$es->add('item',$itemId,$anItem);
+					$result = self::$es->add('item',$itemId,json_encode( $anItem ));
 					var_dump( $result );
 					if ( $result !== NULL && $result->ok == true ) {
 						return $result->_id;
@@ -259,6 +265,15 @@ class BuckServer {
 					$item = self::$es->query( 'item', array('q'=>'itemId:'.$r['request'][1] ));
 					if ( $item->hits->total === 1 ) {
 						return $item->hits->hits[0]->_source;
+					}
+				} else {
+					$_members = self::$es->query( 'member', array('q'=>'_type:member','size'=>BUCK_MAX_SIZE ));
+					if ( $_members->hits->total > 0 ) {
+						$members = array();
+						foreach ( $_members->hits->hits as $member ) {
+							$members[] = $member->_source;
+						}
+						return $members;
 					}
 				}
 				return -1;
