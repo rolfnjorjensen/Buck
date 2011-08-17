@@ -1,6 +1,6 @@
 <?php
 require_once('init.php');
-
+$es->drop();
 $es->create(); //create index
 
 $es->map('member','{
@@ -79,3 +79,4 @@ $es->map('bucket','{
 		}
 	}
 }');
+require_once('getmembers.php');

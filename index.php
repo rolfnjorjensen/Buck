@@ -27,8 +27,8 @@ class BuckServer {
 			break;
 		}
 		
-		if ( !empty( $data['data'] ) ) {
-			$data = json_decode( $data['data'], true ); //decode json into an associative array
+		if ( !empty( $data ) ) {
+			$data = json_decode( $data, true ); //decode json into an associative array
 		}
 		
 		if ( strpos( $_SERVER['REQUEST_URI'], '/' ) === 0 ) {
@@ -36,10 +36,14 @@ class BuckServer {
 			$reqUri = explode( '/', $reqUri );
 			array_shift( $reqUri ); //first element is always "api"
 			$reqUri[0] = strtolower($reqUri[0]); //first uri fragment is always lowercase
-			$reqUri[1] = strtoupper($reqUri[1]); //second is always UPPER
+			if ( !empty( $reqUri[1] ) ) { //if there is a second one
+				$reqUri[1] = strtoupper($reqUri[1]); //second is always UPPER
+			}
 		}
 		
 		$request = array( 'method' => $reqMethod, 'request' => $reqUri, 'data' => $data );
+		
+		$result = array();
 		
 		switch ( strtolower($reqUri[0]) ) {
 			case 'buckets':
@@ -55,7 +59,7 @@ class BuckServer {
 	/**
 	 * handles all bucket logic
 	*/
-	private static function buckets( $r ) {
+	protected static function buckets( $r ) {
 		switch ( $r['method'] ) {
 			//new bucket
 			case 'post':
@@ -66,20 +70,10 @@ class BuckServer {
 						$aBucket['desc'] = $r['data']['desc'];
 					}
 					if ( !empty($r['data']['userHandles']) && is_array($r['data']['userHandles']) ) { //if has users
-						$aBucket['userHandles'] = array();
-						foreach ( $r['data']['userHandles'] as $userId ) { //check them all
-							/**
-							 * @todo use "count" instead of "query"
-							*/
-							$user = self::$es->query( 'member', array('q'=>'handle:'.$userId )); //if they exists
-							if ( $user->hits->total === 1 ) { //and if they do
-								$aBucket['userHandles'][] = $user->hits->hits[0]->_source->handle; //store them
-							}
-						}
+						$aBucket['userHandles'] = self::verifyMembers( $r['data']['userHandles'] );
 					}	
 				}
-				$bucketId=self::nextId();
-				$aBucket['bucketId'] = $bucketId;
+				$aBucket['bucketId'] = $bucketId = self::nextId('bucket');
 				$aBucket = json_encode( $aBucket );
 				/**
 				 * @todo store json file somewhere
@@ -107,16 +101,7 @@ class BuckServer {
 							$bucket['desc'] = $newBucket['desc'];
 						}
 						if ( !empty($newBucket['userHandles']) && is_array($newBucket['userHandles']) ) {
-							$bucket['userHandles'] = array();
-							foreach ( $newBucket['userHandles'] as $userId ) { //check them all
-								/**
-								 * @todo use "count" instead of "query"
-								*/
-								$user = self::$es->query( 'member', array('q'=>'handle:'.$userId )); //if they exists
-								if ( $user->hits->total === 1 ) { //and if they do
-									$bucket['userHandles'][] = $user->hits->hits[0]->_source->handle; //store them
-								}
-							}
+							$bucket['userHandles'] = self::verifyMembers( $newBucket['userHandles'] );
 						}
 						$result = self::$es->add('bucket',$r['request'][1],json_encode($bucket));
 						if ( $result !== NULL && $result->ok == true ) {
@@ -139,16 +124,20 @@ class BuckServer {
 			break;
 			//delete bucket
 			case 'delete':
-			if ( !empty($r['request'][1]) ) { 
-				self::$es->delete('bucket',$r['request'][1]);
-				return 1;
-			} else {
+				if ( !empty($r['request'][1]) ) { 
+					$result = self::$es->delete('bucket',$r['request'][1]);
+					if ( $result['ok'] == true ) {
+						return 1;
+					}
+				}
 				return -1;
-			}
 			break;
 		}
 	}
 	
+	/**
+	 * get a random BUCK_ID_LEN long id comprised of alpha characters which is not already in use
+	*/
 	private static function nextId( $type = 'item' ) {	
 		$possibleChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 		$maxLen = strlen( $possibleChars );
@@ -176,9 +165,106 @@ class BuckServer {
 	}
 	
 	/**
+	 * verify an array of user handles
+	*/
+	private static function verifyMembers( $members ) {
+		$validMembers = array();
+		foreach ( $members as $userHandle ) { //check them all
+			$user = self::$es->count( 'member', array('q'=>'handle:'.$userHandle )); //if they exists
+			if ( $user->count === 1 ) { //and if they do
+				$validMembers[] = $userHandle; //store them
+			}
+		}
+		return $validMembers;
+	}
+	
+	/**
 	 * handles all item logic
 	*/
-	private static function items( $r ) {
-		
+	protected static function items( $r ) {
+			switch ( $r['method'] ) {
+			//new item
+			case 'post':
+				$anItem = array();
+				/**
+				 * @todo submitter should be handled through google SSO, not from the json input
+				*/
+				if ( !empty($r['data']['name']) && !empty($r['data']['submitter']) ) {
+					$anItem['name'] = $r['data']['name'];
+					$anItem['submitter'] = self::verifyMembers( array($r['data']['submitter']) );
+					if ( empty( $anItem['submitter'] ) ) { //submitter invalid
+						return -1;
+					}
+					if ( !empty( $r['data']['desc'] ) ) {
+						$anItem['desc'] = $r['data']['desc'];
+					}
+					if ( !empty( $r['data']['hardDeadline'] ) ) {
+						$anItem['hardDeadline'] = $r['data']['hardDeadline'];
+					}
+					$anItem['created'] = time();
+					$anItem['status'] = ItemStatus::Incoming;
+					$anItem['itemId'] = $itemId = self::nextId('item');
+					$anItem = json_encode( $anItem );
+					/**
+					 * @todo store json file somewhere
+					*/
+					$result = self::$es->add('item',$itemId,$anItem);
+					if ( $result !== NULL && $result->ok == true ) {
+						return $result->_id;
+					}
+				}
+				return -1;
+			break;
+			//edit item
+			case 'put':
+				if ( !empty($r['request'][1]) ) {
+					$item = self::$es->query( 'item', array('q'=>'itemId:'.$r['request'][1] ));
+					if ( $item->hits->total !== 1 ) {
+						return -1;
+					} else {
+						$item = (array)$item->hits->hits[0]->_source;
+						$newItem = $r['data'];
+						if ( !empty($newItem['name']) ) {
+							$item['name'] = $newItem['name'];
+						}
+						if ( !empty($newItem['desc']) ) {
+							$item['desc'] = $newItem['desc'];
+						}
+						if ( !empty($newItem['status']) ) {
+							$item['status'] = $newItem['status'];
+						}
+						if ( !empty($newItem['hardDeadline']) ) {
+							$item['hardDeadline'] = $newItem['hardDeadline'];
+						}
+						$result = self::$es->add('item',$r['request'][1],json_encode($item));
+						if ( $result !== NULL && $result->ok == true ) {
+							return $result->_id;
+						} else {
+							return -1;
+						}
+					}
+				}
+			break;
+			//get bucket
+			case 'get':
+				if ( !empty($r['request'][1]) ) {
+					$item = self::$es->query( 'item', array('q'=>'itemId:'.$r['request'][1] ));
+					if ( $item->hits->total === 1 ) {
+						return $item->hits->hits[0]->_source;
+					}
+				}
+				return -1;
+			break;
+			//delete bucket
+			case 'delete':
+				if ( !empty($r['request'][1]) ) { 
+					$result = self::$es->delete('item',$r['request'][1]);
+					if ( $result['ok'] == true ) {
+						return 1;
+					}
+				}
+				return -1;
+			break;
+		}
 	}
 } echo BuckServer::init();
