@@ -1,4 +1,5 @@
 <?php
+
 require_once('init.php');
 class BuckServer {
 	private static $es;
@@ -10,23 +11,7 @@ class BuckServer {
 		self::$es = $es;
 		
 		$reqMethod = strtolower( $_SERVER['REQUEST_METHOD'] );
-		$data = array();
-		
-		switch ( $reqMethod ) {
-			case 'get':
-				$data = $_GET;
-			break;
-			case 'post':
-				$data = $_POST;
-			break;
-			case 'put':
-				parse_str( file_get_contents('php://input'), $put_vars ); //nasty php tricks
-				$data = $put_vars;
-			break;
-			default:
-			break;
-		}
-		
+		$data = file_get_contents('php://input');
 		if ( !empty( $data ) ) {
 			$data = json_decode( $data, true ); //decode json into an associative array
 		}
@@ -69,8 +54,8 @@ class BuckServer {
 					if ( !empty($r['data']['desc']) ) { //desc is optional
 						$aBucket['desc'] = $r['data']['desc'];
 					}
-					if ( !empty($r['data']['userHandles']) && is_array($r['data']['userHandles']) ) { //if has users
-						$aBucket['userHandles'] = self::verifyMembers( $r['data']['userHandles'] );
+					if ( !empty($r['data']['memberHandles']) && is_array($r['data']['memberHandles']) ) { //if has members
+						$aBucket['memberHandles'] = self::verifyMembers( $r['data']['memberHandles'] );
 					}	
 				}
 				$aBucket['bucketId'] = $bucketId = self::nextId('bucket');
@@ -100,14 +85,14 @@ class BuckServer {
 						if ( !empty($newBucket['desc']) ) {
 							$bucket['desc'] = $newBucket['desc'];
 						}
-						if ( !empty($newBucket['userHandles']) && is_array($newBucket['userHandles']) ) {
-							$bucket['userHandles'] = self::verifyMembers( $newBucket['userHandles'] );
+						if ( !empty($newBucket['memberHandles']) && is_array($newBucket['memberHandles']) ) {
+							$bucket['memberHandles'] = self::verifyMembers( $newBucket['memberHandles'] );
 						}
 						$result = self::$es->add('bucket',$r['request'][1],json_encode($bucket));
 						if ( $result !== NULL && $result->ok == true ) {
 							return $result->_id;
 						} else {
-							return -1;
+							return -2;
 						}
 					}
 				}
@@ -165,17 +150,29 @@ class BuckServer {
 	}
 	
 	/**
-	 * verify an array of user handles
+	 * verify an array of member handles
 	*/
 	private static function verifyMembers( $members ) {
 		$validMembers = array();
-		foreach ( $members as $userHandle ) { //check them all
-			$user = self::$es->count( 'member', array('q'=>'handle:'.$userHandle )); //if they exists
-			if ( $user->count === 1 ) { //and if they do
-				$validMembers[] = $userHandle; //store them
+		foreach ( $members as $memberHandle ) { //check them all
+			$member = self::$es->count( 'member', array('q'=>'handle:'.$memberHandle )); //if they exists
+			if ( $member->count === 1 ) { //and if they do
+				$validMembers[] = $memberHandle; //store them
 			}
 		}
 		return $validMembers;
+	}
+
+	
+	/**
+	 * verify an array of member handles
+	*/
+	private static function verifyBucketId( $bucketId ) {
+		$bucket = self::$es->count( 'bucket', array('q'=>'bucketId:'.$bucketId )); //if they exists
+		if ( $bucket->count === 1 ) { //and if they do
+			return true;
+		}
+		return false;
 	}
 	
 	/**
@@ -189,17 +186,26 @@ class BuckServer {
 				/**
 				 * @todo submitter should be handled through google SSO, not from the json input
 				*/
-				if ( !empty($r['data']['name']) && !empty($r['data']['submitter']) ) {
+				var_dump( $r['data'] );
+				if ( !empty($r['data']['name']) && !empty($r['data']['submitter']) && !empty($r['data']['bucketId']) ) {
 					$anItem['name'] = $r['data']['name'];
 					$anItem['submitter'] = self::verifyMembers( array($r['data']['submitter']) );
-					if ( empty( $anItem['submitter'] ) ) { //submitter invalid
+					if ( empty( $anItem['submitter'][0] ) ) { //submitter invalid
 						return -1;
 					}
+					$anItem['submitter'] = $anItem['submitter'][0];
 					if ( !empty( $r['data']['desc'] ) ) {
 						$anItem['desc'] = $r['data']['desc'];
 					}
 					if ( !empty( $r['data']['hardDeadline'] ) ) {
 						$anItem['hardDeadline'] = $r['data']['hardDeadline'];
+					}
+					if ( !empty( $r['data']['bucketId'] ) ) {
+						if ( self::verifyBucketId( $r['data']['bucketId'] ) ) {
+							$anItem['bucketId'] = $r['data']['bucketId'];
+						} else {
+							return -2;
+						}
 					}
 					$anItem['created'] = time();
 					$anItem['status'] = ItemStatus::Incoming;
@@ -208,12 +214,14 @@ class BuckServer {
 					/**
 					 * @todo store json file somewhere
 					*/
+					echo '$result = self::$es->add(\'item\','.$itemId.','.$anItem.');'."\n";
 					$result = self::$es->add('item',$itemId,$anItem);
+					var_dump( $result );
 					if ( $result !== NULL && $result->ok == true ) {
 						return $result->_id;
 					}
 				}
-				return -1;
+				return -3;
 			break;
 			//edit item
 			case 'put':

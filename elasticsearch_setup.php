@@ -34,7 +34,7 @@ $es->map('item','{
 				"store": "yes"
 			},
 			"desc": {
-				"type": "integer",
+				"type": "string",
 				"store": "yes"
 			},
 			"created": {
@@ -50,6 +50,10 @@ $es->map('item','{
 				"store": "yes"
 			},
 			"submitter": {
+				"type": "string",
+				"store": "yes"
+			},
+			"bucketId": {
 				"type": "string",
 				"store": "yes"
 			}
@@ -72,7 +76,7 @@ $es->map('bucket','{
 				"type": "string",
 				"store": "yes"
 			},
-			"userHandles": {
+			"memberHandles": {
 				"type": "string",
 				"store": "yes"
 			}

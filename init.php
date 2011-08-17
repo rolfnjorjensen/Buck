@@ -10,9 +10,6 @@ class ItemStatus {
 	const WorkingOn = 3; 
 }
 
-define('BUCK_STATUS_INCOMING', 1);
-define('BUCK_STATUS_ACCEPTED',)
-
 require_once('elasticsearch.php');
 $es = new ElasticSearch();
 $es->index = 'buck';

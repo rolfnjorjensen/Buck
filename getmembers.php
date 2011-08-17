@@ -1,8 +1,10 @@
 <?php
 require_once('init.php');
 
-echo '<pre>';
-require_once('secret.php');
+$email = 'some@domain.com';
+$password = 'secret';
+$domain = "domain.com";
+require_once('secret.php'); //here are the actual email/pw/domain values >D
 
 require_once('Zend/Loader/Autoloader.php');
 Zend_Loader_Autoloader::getInstance();
