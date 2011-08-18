@@ -88,30 +88,30 @@ Bucket.prototype = {
 	*/
 	menu: function() {
 		var that = this;
-		$('#footer .bucketsMode').live('click',function(){
+		$('.menu .bucketsMode').live('click',function(){
 			that.switchToBucketsMode();
 		});
-		$('#footer .itemsMode').live('click',function(){
+		$('.menu .itemsMode').live('click',function(){
 			that.switchToItemsMode();
 		});
-		$('#footer .itemAddMode').live('click',function(){
+		$('.menu .itemAddMode').live('click',function(){
 			that.switchToItemAddMode();
 		});
 	},
 	switchToBucketsMode: function() {
 		this.switch();
 		this.bucketsMode();
-		$('#footer .bucketsMode').addClass('active');
+		$('.menu .bucketsMode').addClass('active');
 	},
 	switchToItemsMode: function() {
 		this.switch();
 		this.itemsMode();
-		$('#footer .itemsMode').addClass('active');
+		$('.menu .itemsMode').addClass('active');
 	},
 	switchToItemAddMode: function() {
 		this.switch();
 		this.itemAdd();
-		$('#footer .itemAddMode').addClass('active');
+		$('.menu .itemAddMode').addClass('active');
 	},
 	refreshData: function() {
 		var that = this;
@@ -316,11 +316,11 @@ Bucket.prototype = {
 	*/
 	switch: function() {
 		$(document).unbind(); //unbind all events
-		$('#footer .button').removeClass('active'); //reset active buttons
+		$('.menu .button').removeClass('active'); //reset active buttons
 		$('.dynamic').html(''); //remove all dynamically requested content
 		$('.'+this.tokenInputOptions._className).remove(); //remove tokeninputs
 		$('.pages').children().hide(); //hide all pages
-		this.menu(); //reinitialize footer menu
+		this.menu(); //reinitialize menu
 	}
 };
 
