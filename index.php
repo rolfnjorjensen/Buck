@@ -231,17 +231,16 @@ class BuckServer {
 				/**
 				 * @todo submitter should be handled through google SSO, not from the json input
 				*/
-				if ( !empty($r['data']['name']) && !empty($r['data']['submitter']) && !empty($r['data']['bucketId']) ) {
+				if ( !empty($r['data']['name']) && !empty($r['data']['bucketId']) ) {
 					$anItem['name'] = $r['data']['name'];
-					$anItem['submitter'] = self::verifyMembers( array($r['data']['submitter']) );
-					if ( empty( $anItem['submitter'][0] ) ) { //submitter invalid
-						return -1;
-					}
-					$anItem['submitter'] = $anItem['submitter'][0];
+					$anItem['submitter'] = $_COOKIE['userHandle'];
 					if ( !empty( $r['data']['desc'] ) ) {
 						$anItem['desc'] = $r['data']['desc'];
 					}
-					if ( !empty( $r['data']['hardDeadline'] ) ) {
+					if ( !empty( $r['data']['hardDeadline'] ) ) {						
+						if ( !is_numeric( $r['data']['hardDeadline'] ) ) {
+							$r['data']['hardDeadline'] = strtotime( $r['data']['hardDeadline'] );
+						}
 						$anItem['hardDeadline'] = $r['data']['hardDeadline'];
 					}
 					if ( !empty( $r['data']['bucketId'] ) ) {
@@ -258,7 +257,6 @@ class BuckServer {
 					 * @todo store json file somewhere
 					*/
 					$result = self::$es->add('item',$itemId,json_encode( $anItem ));
-					var_dump( $result );
 					if ( $result !== NULL && $result->ok == true ) {
 						return $result->_id;
 					}
@@ -284,6 +282,9 @@ class BuckServer {
 							$item['status'] = $newItem['status'];
 						}
 						if ( !empty($newItem['hardDeadline']) ) {
+							if ( !is_numeric( $newItem['hardDeadline'] ) ) {
+								$newItem['hardDeadline'] = strtotime( $newItem['hardDeadline'] );
+							}
 							$item['hardDeadline'] = $newItem['hardDeadline'];
 						}
 						$result = self::$es->add('item',$r['request'][1],json_encode($item));
@@ -319,6 +320,9 @@ class BuckServer {
 							foreach ( $_items->hits->hits as $item ) {
 								$item = $item->_source;
 								$item->created8601 = date('c', $item->created);
+								if ( !empty( $item->hardDeadline ) ) {
+									$item->hardDeadline8601 = date('c', $item->hardDeadline);
+								}
 								$items[] = $item;
 							}
 						}

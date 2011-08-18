@@ -55,6 +55,7 @@ BucketUtils.prototype = {
 		});
 	},
 	refreshTimeago: function() {
+		jQuery.timeago.settings.allowFuture = true;
 		$('abbr.timeago').timeago();
 	}
 };
@@ -73,11 +74,44 @@ Bucket.prototype = {
 		
 		this.utils = new BucketUtils();
 		
+		this.menu();
+		
 		this.tokenInputUrl = '/api/members/';
 		this.tokenInputOptions = {
 			theme: 'facebook',
-			searchDelay: 100
+			searchDelay: 100,
+			_className: 'token-input-list-facebook'
 		};
+	},
+	/**
+	 * sets up bindings for footer menuitems
+	*/
+	menu: function() {
+		var that = this;
+		$('#footer .bucketsMode').live('click',function(){
+			that.switchToBucketsMode();
+		});
+		$('#footer .itemsMode').live('click',function(){
+			that.switchToItemsMode();
+		});
+		$('#footer .itemAddMode').live('click',function(){
+			that.switchToItemAddMode();
+		});
+	},
+	switchToBucketsMode: function() {
+		this.switch();
+		this.bucketsMode();
+		$('#footer .bucketsMode').addClass('active');
+	},
+	switchToItemsMode: function() {
+		this.switch();
+		this.itemsMode();
+		$('#footer .itemsMode').addClass('active');
+	},
+	switchToItemAddMode: function() {
+		this.switch();
+		this.itemAdd();
+		$('#footer .itemAddMode').addClass('active');
 	},
 	refreshData: function() {
 		var that = this;
@@ -97,6 +131,12 @@ Bucket.prototype = {
 			for ( var i = 0; i < j; i++ ) {
 				that.assocBuckets[result[i].bucketId] = result[i];
 			}
+			
+			var $itemBucketSelect = $('#itemAdd select[name=itemBucket]');
+			
+			$.each(that.buckets,function(i,v){
+				$itemBucketSelect.append($('<option/>').val(this.bucketId).text(this.name));
+			});
 		});
 	},
 	/**
@@ -129,8 +169,13 @@ Bucket.prototype = {
 			success();
 		});
 	},
-	buckets: function() {
+	bucketsMode: function() {
 		var that = this;
+		
+		this.refreshData();
+		
+		$('#buckets').show();
+		
 		//init inputtokenizer with default options
 		$('.memberHandleTokens').tokenInput(that.tokenInputUrl,that.tokenInputOptions);
 		
@@ -203,8 +248,10 @@ Bucket.prototype = {
 	/**
 	 * item list
 	*/
-	items: function() {
+	itemsMode: function() {
 		var that = this;
+		
+		$('#items').show();
 		
 		this.client.get('items',function(result){
 			that.items = result;
@@ -220,26 +267,44 @@ Bucket.prototype = {
 		});
 		
 		$('#items a.add').live('click',function(){
-			that.switch();
-			that.newItem();
+			that.switchToItemsAddMode();
 		});
 	},
 	/**
 	 * new item creation
 	*/
-	newItem: function() {
+	itemAdd: function() {
+		var that = this;
 		
+		$('#itemAdd').show();
+		
+		$('#itemAdd a.save').live('click',function(){
+			var item = {
+				name: $('#itemAdd input[name=itemName]').val(),
+				desc: $('#itemAdd input[name=itemDesc]').val(),
+				bucketId: $('#itemAdd select[name=itemBucket]').val(),
+				hardDeadline: $('#itemAdd input[name=hardDeadline]').val()
+			};
+			that.client.post('items',item,function(result){
+				that.switchToItemsMode();
+			});
+		});
 	},
 	/**
-	 * unbind all events when switching pages
+	 * cleanup before switching pages
 	*/
 	switch: function() {
-		$(document).unbind();
+		$(document).unbind(); //unbind all events
+		$('#footer .button').removeClass('active'); //reset active buttons
+		$('.dynamic').html(''); //remove all dynamically requested content
+		$('.'+this.tokenInputOptions._className).remove(); //remove tokeninputs
+		$('.pages').children().hide(); //hide all pages
+		this.menu(); //reinitialize footer menu
 	}
 };
 
 $(function(){
 	var Buck = new Bucket();
 	
-	Buck.items();
+	Buck.itemsMode();
 });
