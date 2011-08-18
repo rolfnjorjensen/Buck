@@ -32,12 +32,13 @@
 					<input name="bucketDesc" placeholder="New Bucket's Description" />
 					<label for="bucketMemberHandles">Members</label>
 					<input class="memberHandleTokens" name="bucketMemberHandles" />
-					<a class="save button">Add</a>
+					<a class="save button">Add New Bucket</a>
 				</div>
 			</div>
 			<div id="items" class="sixteen columns add-top add-bottom" style="display: none;">
-				<a class="add button add-bottom">Add Item</a>
-				<br class="clear" />
+				<div class="add">
+					<a class="add button">Add Item</a>
+				</div>
 				<div class="sorting">
 					<a class="button">Group by Buckets</a>
 					<a class="button left">Chronological</a>
@@ -56,15 +57,17 @@
 				<input name="itemDesc" placeholder="New Item's Description" />
 				<label for="itemBucket">Bucket</label>
 				<select name="itemBucket" class="dynamic"></select>
-				<input name="hardDeadline" type="datetime" placeholder="New Item's Hard Deadline" />
-				<a class="save button">Add</a>
+				<input name="hardDeadline" type="datetime" placeholder="New Item's Hard Deadline (ex: next tuesday, 2011-08-18 16:20:00, 1313652054, yesterday, etc)" />
+				<a class="save button">Add New Item</a>
 			</div>
 		</div>
 		<hr class="break" />
 		<div id="footer" class="sixteen columns add-top add-bottom">
-			<a class="button left bucketsMode">Edit Buckets</a>
-			<a class="button middle active itemsMode">My Items</a>
-			<a class="button right itemAddMode">Add New Item</a>
+			<div>
+				<a class="button left bucketsMode">Edit Buckets</a>
+				<a class="button middle active itemsMode">My Items</a>
+				<a class="button right itemAddMode">Add New Item</a>
+			</div>
 		</div>	
 		<hr class="break" />
 	</div><!-- container -->

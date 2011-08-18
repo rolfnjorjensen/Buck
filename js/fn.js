@@ -251,6 +251,8 @@ Bucket.prototype = {
 	itemsMode: function() {
 		var that = this;
 		
+		this.refreshData();
+		
 		$('#items').show();
 		
 		this.client.get('items',function(result){
@@ -259,7 +261,7 @@ Bucket.prototype = {
 		});
 		
 		$('.item a.delete').live('click',function(){
-			var $item = $(this).parent();
+			var $item = $(this).parent().parent();
 			var itemId = $item.attr('data-id');
 			that.client.delete('items/'+itemId,function(result){
 				$('#item-'+itemId).remove();
@@ -271,7 +273,7 @@ Bucket.prototype = {
 		});
 		
 		$('#items select[name=itemStatus]').live('change',function(){
-			var $item = $(this).parent();
+			var $item = $(this).parent().parent();
 			var itemId = $item.attr('data-id');
 			var statusChange = {status:$(this).val()};
 			that.client.put('items/'+itemId,statusChange,function(result){

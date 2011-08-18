@@ -118,7 +118,6 @@
 	.half-bottom { margin-bottom: 10px !important; }
 	.add-bottom { margin-bottom: 20px !important; }
 	.add-top { margin-top: 20px !important; }
-
 		
 	/* 
 	* Skeleton V1.0.3
@@ -320,40 +319,7 @@
 	    }
 
 
-	/* #Clearing
-	================================================== */
 
-	    /* Self Clearing Goodness */
-	    .container:after { content: "\0020"; display: block; height: 0; clear: both; visibility: hidden; } 
-
-	    /* Use clearfix class on parent to clear nested columns, 
-	    or wrap each row of columns in a <div class="row"> */
-	    .clearfix:before,
-	    .clearfix:after,
-	    .row:before,
-	    .row:after {
-	      content: '\0020';
-	      display: block;
-	      overflow: hidden;
-	      visibility: hidden;
-	      width: 0;
-	      height: 0; }
-	    .row:after,
-	    .clearfix:after {
-	      clear: both; }
-	    .row, 
-	    .clearfix {
-	      zoom: 1; }
-
-	    /* You can also use a <br class="clear" /> to clear columns */
-	    .clear {
-	      clear: both;
-	      display: block;
-	      overflow: hidden;
-	      visibility: hidden;
-	      width: 0;
-	      height: 0;
-	    }
 
 
 		/* =============================================================================
@@ -660,3 +626,118 @@
 		a.icon198 span {background:url(/img/button-icons.png) -252px -720px;}
 		a.icon199 span {background:url(/img/button-icons.png) -288px -720px;}
 		a.icon200 span {background:url(/img/button-icons.png) -324px -720px;}
+		
+/* buckets/itemAdd page */
+#buckets input, #itemAdd input, #itemAdd select {
+	display: block;
+	width: 100%;
+	margin-bottom: 10px;
+}	
+#buckets input[name=bucketName], #itemAdd input[name=itemName] {
+	font-size: 36px;
+}
+#itemAdd select {
+	font-size: 28px;
+}
+#itemAdd button #buckets .button {
+	margin-bottom: 10px;
+}	
+		
+		
+/* items page */
+
+#items > .add {
+	position: absolute;
+	right: 0;
+}
+		
+.item {
+	margin: 20px 0;
+}
+.itemSide > * {
+	display: block;
+	margin: 10px 0;
+	text-align: center;
+}
+.itemSide small:before {
+	content: '#';
+}
+.itemSide small {
+	font-weight: bold;
+	font-size: 17px;
+}	
+.itemSide select {
+	width: 100%;
+}
+.itemSide .button {
+	padding: 0;
+	width: 100%;
+}
+.item {
+	padding-top: 10px;
+	padding-bottom: 10px;
+	border-radius: 10px;
+}
+.item.incomingStatus {
+	background-color: #FFDDDD;
+}
+.item.acceptedStatus {
+	background-color: #DDDDFF;
+}
+.item.workedonStatus {
+	background-color: #DDFFDD;
+}
+
+em.time {
+	margin-top: ;
+}
+em.time, em.time * {
+	color: #999;
+}
+
+/* footer */
+#footer > div {
+	margin: 0 auto;
+	width: 300px;
+}
+#footer .button {
+	padding: 0;
+	width: 90px;
+	text-align: center;
+}
+		
+		
+		/* #Clearing
+		================================================== */
+
+		    /* Self Clearing Goodness */
+		    .container:after { content: "\0020"; display: block; height: 0; clear: both; visibility: hidden; } 
+
+		    /* Use clearfix class on parent to clear nested columns, 
+		    or wrap each row of columns in a <div class="row"> */
+		    .clearfix:before,
+		    .clearfix:after,
+		    .row:before,
+		    .row:after {
+		      content: '\0020';
+		      display: block;
+		      overflow: hidden;
+		      visibility: hidden;
+		      width: 0;
+		      height: 0; }
+		    .row:after,
+		    .clearfix:after {
+		      clear: both; }
+		    .row, 
+		    .clearfix {
+		      zoom: 1; }
+
+		    /* You can also use a <br class="clear" /> to clear columns */
+		    .clear {
+		      clear: both;
+		      display: block;
+		      overflow: hidden;
+		      visibility: hidden;
+		      width: 0;
+		      height: 0;
+		    }
