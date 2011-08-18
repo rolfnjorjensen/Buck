@@ -42,6 +42,10 @@
 		-webkit-font-smoothing: antialiased; /* Fix for webkit rendering */
 		-webkit-text-size-adjust: 100%;
  }
+
+input,select {
+	font-family:"Adelle Bold", Georgia, serif; font-size-adjust:0.523; font-weight:bold; font-style:normal;
+}
 	
 
 /* #Typography
@@ -49,11 +53,12 @@
 	h1, h2, h3, h4, h5, h6 { 
 		color: #181818; 
 		font-family: "Georgia", "Times New Roman", Helvetica, Arial, sans-serif;
-		font-weight: normal; }
+		font-weight: normal;
+		font-family:"Adelle Bold", Georgia, serif; font-size-adjust:0.523; font-weight:bold; font-style:normal; }
 	h1 a, h2 a, h3 a, h4 a, h5 a, h6 a { font-weight: inherit; }
 	h1 { font-size: 46px; line-height: 50px; margin-bottom: 14px;}
 	h2 { font-size: 35px; line-height: 40px; margin-bottom: 10px; }
-	h3 { font-size: 28px; line-height: 34px; margin-bottom: 8px; }
+	h3 { font-size: 28px; line-height: 34px; margin-bottom: 8px; font-family:"Adelle Regular", Georgia, serif; font-size-adjust:0.516; font-weight:normal; font-style:normal; }
 	h4 { font-size: 21px; line-height: 30px; margin-bottom: 4px; }
 	h5 { font-size: 17px; line-height: 24px; }
 	h6 { font-size: 14px; line-height: 21px; }
@@ -638,6 +643,7 @@
 }
 #itemAdd select {
 	font-size: 28px;
+	padding: 5px 0;
 }
 #itemAdd button #buckets .button {
 	margin-bottom: 10px;
@@ -650,10 +656,7 @@
 	position: absolute;
 	right: 0;
 }
-		
-.item {
-	margin: 20px 0;
-}
+	
 .itemSide > * {
 	display: block;
 	margin: 10px 0;
@@ -664,6 +667,7 @@
 }
 .itemSide small {
 	font-weight: bold;
+	font-family:"Adelle Light", Georgia, serif; font-size-adjust:0.516; font-weight:200; font-style:normal;
 	font-size: 17px;
 }	
 .itemSide select {
@@ -673,10 +677,17 @@
 	padding: 0;
 	width: 100%;
 }
+.itemContent p {
+	margin-top: 10px;
+}
 .item {
+margin: 20px 0;
 	padding-top: 10px;
 	padding-bottom: 10px;
 	border-radius: 10px;
+}
+.item h2 {
+	margin-top: 2px;
 }
 .item.incomingStatus {
 	background-color: #FFDDDD;
@@ -689,18 +700,21 @@
 }
 
 em.time {
-	margin-top: ;
+	margin-bottom: 10px;
 }
 em.time, em.time * {
 	color: #999;
 }
+em.time strong, em.time strong abbr {
+	color: black;
+}
 
-/* footer */
-#footer > div {
+/* menu */
+.menu > div {
 	margin: 0 auto;
 	width: 300px;
 }
-#footer .button {
+.menu .button {
 	padding: 0;
 	width: 90px;
 	text-align: center;

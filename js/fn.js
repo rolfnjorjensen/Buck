@@ -268,8 +268,8 @@ Bucket.prototype = {
 			});
 		});
 		
-		$('#items a.add').live('click',function(){
-			that.switchToItemsAddMode();
+		$('#items a.add.button').live('click',function(){
+			that.switchToItemAddMode();
 		});
 		
 		$('#items select[name=itemStatus]').live('change',function(){
