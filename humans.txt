@@ -1,0 +1,49 @@
+/* the humans responsible & colophon */
+/* humanstxt.org */
+
+
+/* TEAM */
+  Daniel Spitzer & Rolf Njor Jensen
+  Site: http://tradeshift.com
+  Twitter: @sampi604 & @rolfnjorjensen
+  Location: Copenhagen, Denmark
+
+/* THANKS */
+  Names (& URL): 
+  hubgit (Alf Eaton) http://hublog.hubmed.org/ for the elasticsearch wrapper
+  http://html5boilerplate.com
+  http://pixify.com/blog/use-os-x-lion-to-improve-your-ui/
+
+/* SITE */
+  Standards: HTML5, CSS3
+  Components: Modernizr, jQuery
+  Software: elasticsearch
+
+
+TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT    SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS
+TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT    SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS
+TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT    SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS
+TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT    SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS
+TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT    SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS
+TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT    SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS
+TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT    SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS
+                       TTTTTTTTTTTTTTT    SSSSSSSSSSSSSSS                       
+                       TTTTTTTTTTTTTTT    SSSSSSSSSSSSSSS                       
+                       TTTTTTTTTTTTTTT    SSSSSSSSSSSSSSS                       
+                       TTTTTTTTTTTTTTT    SSSSSSSSSSSSSSS                       
+                       TTTTTTTTTTTTTTT    SSSSSSSSSSSSSSS                       
+                       TTTTTTTTTTTTTTT    SSSSSSSSSSSSSSS                       
+                       TTTTTTTTTTTTTTT    SSSSSSSSSSSSSSS                       
+                       TTTTTTTTTTTTTTT    SSSSSSSSSSSSSSS                       
+                       TTTTTTTTTTTTTTT    SSSSSSSSSSSSSSS                       
+                       TTTTTTTTTTTTTTT    SSSSSSSSSSSSSSS                       
+                       TTTTTTTTTTTTTTT    SSSSSSSSSSSSSSS                       
+                       TTTTTTTTTTTTTTT    SSSSSSSSSSSSSSS                       
+                       TTTTTTTTTTTTTTT    SSSSSSSSSSSSSSS                       
+                       TTTTTTTTTTTTTTT    SSSSSSSSSSSSSSS                       
+                       TTTTTTTTTTTTTTT    SSSSSSSSSSSSSSS                       
+                       TTTTTTTTTTTTTTT    SSSSSSSSSSSSSSS                       
+                       TTTTTTTTTTTTTTT    SSSSSSSSSSSSSSS                       
+                       TTTTTTTTTTTTTTT    SSSSSSSSSSSSSSS                       
+                       TTTTTTTTTTTTTTT    SSSSSSSSSSSSSSS                       
+                       TTTTTTTTTTTTTTT    SSSSSSSSSSSSSSS

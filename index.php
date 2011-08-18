@@ -37,8 +37,41 @@ class BuckServer {
 			case 'items':
 				$result = self::items( $request );
 			break;
+			case 'members':
+				$result = self::members( $request );
+			break;
 		}
 		return json_encode($result);
+	}
+	
+	/**
+	 * handles all member logic (search/getall only)
+	*/
+	protected static function members( $r ) {
+		switch ( $r['method'] ) {
+			case 'get':
+				if ( !empty( $_GET['q'] ) ) {
+					$q = $_GET['q'];
+					$_members = self::$es->query( 'member', array('q'=>'*'.$q.'*','size'=>BUCK_MAX_SIZE ));
+					if ( $_members->hits->total > 0 ) {
+						$members = array();
+						foreach ( $_members->hits->hits as $member ) {
+							$members[] = array( 'id' => $member->_source->handle, 'name' => $member->_source->name ); //jQuery.tokenInput needs this format
+						}
+						return $members;
+					}
+				} else {
+					$_members = self::$es->query( 'member', array('q'=>'_type:member','size'=>BUCK_MAX_SIZE ));
+					if ( $_members->hits->total > 0 ) {
+						$members = array();
+						foreach ( $_members->hits->hits as $member ) {
+							$members[] = $member->_source;
+						}
+						return $members;
+					}
+				}
+			break;
+		}
 	}
 	
 	/**
@@ -57,17 +90,16 @@ class BuckServer {
 					if ( !empty($r['data']['memberHandles']) && is_array($r['data']['memberHandles']) ) { //if has members
 						$aBucket['memberHandles'] = self::verifyMembers( $r['data']['memberHandles'] );
 					}	
+					$aBucket['bucketId'] = $bucketId = self::nextId('bucket');
+					/**
+					 * @todo store json file somewhere
+					*/
+					$result = self::$es->add('bucket',$bucketId,json_encode( $aBucket ));
+					if ( $result !== NULL && $result->ok == true ) {
+						return $result->_id;
+					}
 				}
-				$aBucket['bucketId'] = $bucketId = self::nextId('bucket');
-				/**
-				 * @todo store json file somewhere
-				*/
-				$result = self::$es->add('bucket',$bucketId,json_encode( $aBucket ));
-				if ( $result !== NULL && $result->ok == true ) {
-					return $result->_id;
-				} else {
-					return -1;
-				}
+				return -1;
 			break;
 			//edit bucket
 			case 'put':
@@ -119,7 +151,7 @@ class BuckServer {
 			case 'delete':
 				if ( !empty($r['request'][1]) ) { 
 					$result = self::$es->delete('bucket',$r['request'][1]);
-					if ( $result['ok'] == true ) {
+					if ( $result->ok == true ) {
 						return 1;
 					}
 				}
@@ -194,7 +226,6 @@ class BuckServer {
 				/**
 				 * @todo submitter should be handled through google SSO, not from the json input
 				*/
-				var_dump( $r['data'] );
 				if ( !empty($r['data']['name']) && !empty($r['data']['submitter']) && !empty($r['data']['bucketId']) ) {
 					$anItem['name'] = $r['data']['name'];
 					$anItem['submitter'] = self::verifyMembers( array($r['data']['submitter']) );
