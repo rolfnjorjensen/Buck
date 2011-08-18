@@ -1,8 +1,13 @@
-<div id="item-${itemId}" data-id="${itemId}" class="item">
+<div id="item-${itemId}" data-id="${itemId}" class="item {{if status == 1}}incomingStatus{{else status == 2}}acceptedStatus{{else status == 3}}workedonStatus{{/if}}">
 	<h2>${name}</h2>
 	<small>${itemId}</small>
 	<p>${desc}</p>
 	<p>by ${submitter}</p>
+	<select name="itemStatus">
+		<option value="1"{{if status == 1}} selected="selected"{{/if}}>Incoming</option>
+		<option value="2"{{if status == 2}} selected="selected"{{/if}}>Accepted</option>
+		<option value="3"{{if status == 3}} selected="selected"{{/if}}>Being Worked On</option>
+	</select>
 	<abbr class="timeago" title="${created8601}">${created8601}</abbr>
 	{{if hardDeadline}} <strong>Deadline <abbr class="timeago" title="${hardDeadline8601}">${hardDeadline8601}</abbr></strong> {{/if}}
 	<a class="delete button">Delete</a>

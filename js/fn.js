@@ -269,6 +269,15 @@ Bucket.prototype = {
 		$('#items a.add').live('click',function(){
 			that.switchToItemsAddMode();
 		});
+		
+		$('#items select[name=itemStatus]').live('change',function(){
+			var $item = $(this).parent();
+			var itemId = $item.attr('data-id');
+			var statusChange = {status:$(this).val()};
+			that.client.put('items/'+itemId,statusChange,function(result){
+				that.utils.highlight($item);
+			});
+		});
 	},
 	/**
 	 * new item creation
@@ -279,6 +288,7 @@ Bucket.prototype = {
 		$('#itemAdd').show();
 		
 		$('#itemAdd a.save').live('click',function(){
+			var $button = $(this);
 			var item = {
 				name: $('#itemAdd input[name=itemName]').val(),
 				desc: $('#itemAdd input[name=itemDesc]').val(),
@@ -289,9 +299,9 @@ Bucket.prototype = {
 			that.client.post('items',item,function(result){
 				/**
 				 * @todo there has to be a way to do this without the timeout
-				*/
+				*/ 
 				setTimeout(function(){
-					$(this).text('Add');
+					$button.text('Add');
 					that.switchToItemsMode();
 				},500);
 			});
