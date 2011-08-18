@@ -285,6 +285,8 @@ Bucket.prototype = {
 	itemAdd: function() {
 		var that = this;
 		
+		this.refreshData();
+		
 		$('#itemAdd').show();
 		
 		$('#itemAdd a.save').live('click',function(){
