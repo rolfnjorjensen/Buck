@@ -4,7 +4,7 @@
 	<p>${desc}</p>
 	<p>by ${submitter}</p>
 	<abbr class="timeago" title="${created8601}">${created8601}</abbr>
-	<strong>Deadline <abbr class="timeago" title="${hardDeadline8601}">${hardDeadline8601}</abbr></strong>
+	{{if hardDeadline}} <strong>Deadline <abbr class="timeago" title="${hardDeadline8601}">${hardDeadline8601}</abbr></strong> {{/if}}
 	<a class="delete button">Delete</a>
+	<hr class="break" />
 </div>
-<hr/>

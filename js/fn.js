@@ -6,7 +6,7 @@ BucketClient.prototype = {
 	init: function() {
 		this.url = '/api/';
 	},
-	'request': function(type,method,data,success) {
+	request: function(type,method,data,success) {
 		var that = this;
 		var requestParams = {
 			url: that.url+type+'/',
@@ -285,8 +285,15 @@ Bucket.prototype = {
 				bucketId: $('#itemAdd select[name=itemBucket]').val(),
 				hardDeadline: $('#itemAdd input[name=hardDeadline]').val()
 			};
+			$(this).text('Adding...');
 			that.client.post('items',item,function(result){
-				that.switchToItemsMode();
+				/**
+				 * @todo there has to be a way to do this without the timeout
+				*/
+				setTimeout(function(){
+					$(this).text('Add');
+					that.switchToItemsMode();
+				},500);
 			});
 		});
 	},
