@@ -43,7 +43,7 @@ function BucketUtils() {
 
 BucketUtils.prototype = {
 	init: function() {
-		
+		this.refreshTimeago();
 	},
 	highlight: function($elem) {
 		$elem.animate({
@@ -53,6 +53,9 @@ BucketUtils.prototype = {
 				opacity: 1
 			},300);
 		});
+	},
+	refreshTimeago: function() {
+		$('abbr.timeago').timeago();
 	}
 };
 
@@ -65,13 +68,8 @@ Bucket.prototype = {
 		this.client = new BucketClient();
 		
 		var that = this;
-		this.client.get('members',function(result){
-			var j = result.length;
-			that.members = [];
-			for ( var i = 0; i < j; i++ ) {
-				that.members[result[i].handle] = result[i].name;
-			}
-		});
+		
+		this.refreshData();
 		
 		this.utils = new BucketUtils();
 		
@@ -80,6 +78,26 @@ Bucket.prototype = {
 			theme: 'facebook',
 			searchDelay: 100
 		};
+	},
+	refreshData: function() {
+		var that = this;
+		
+		this.client.get('members',function(result){
+			var j = result.length;
+			that.members = [];
+			for ( var i = 0; i < j; i++ ) {
+				that.members[result[i].handle] = result[i].name;
+			}
+		});
+		
+		this.client.get('buckets',function(result){
+			that.buckets = result;
+			var j = result.length;
+			that.assocBuckets = [];
+			for ( var i = 0; i < j; i++ ) {
+				that.assocBuckets[result[i].bucketId] = result[i];
+			}
+		});
 	},
 	/**
 	 * buckets page
@@ -116,11 +134,8 @@ Bucket.prototype = {
 		//init inputtokenizer with default options
 		$('.memberHandleTokens').tokenInput(that.tokenInputUrl,that.tokenInputOptions);
 		
-		//existing buckets
-		this.client.get('buckets',function(result){
-			that.buckets = result;
-			that.drawBuckets(that.buckets,function(){});
-		});
+		//draw existing buckets
+		this.drawBuckets(this.buckets,function(){});
 		
 		$('.bucket a.save').live('click', function(e){
 			var $bucket = $(this).parent();
@@ -162,6 +177,59 @@ Bucket.prototype = {
 			});
 		});
 	},
+	drawItems: function(items,success) {
+		var that = this;
+		var j = items.length;
+		var tmplItems = [];
+		for ( var i = 0; i < j; i++ ) {
+			var item = items[i];
+			//get buckets for items into array of objects
+			$.extend(item,{
+				bucket: that.assocBuckets[items[i].bucketId]
+			});
+			//get submitters from members
+			$.extend(item,{
+				submitter: that.members[items[i].submitter]
+			});
+			tmplItems.push(item);
+		}
+		//tmpl action
+		$.get('/js/tmpl/item.html',function(tmpl){
+			$.tmpl(tmpl,tmplItems).appendTo('.items');
+			that.utils.refreshTimeago();
+		});
+		success();
+	},
+	/**
+	 * item list
+	*/
+	items: function() {
+		var that = this;
+		
+		this.client.get('items',function(result){
+			that.items = result;
+			that.drawItems(that.items,function(){});
+		});
+		
+		$('.item a.delete').live('click',function(){
+			var $item = $(this).parent();
+			var itemId = $item.attr('data-id');
+			that.client.delete('items/'+itemId,function(result){
+				$('#item-'+itemId).remove();
+			});
+		});
+		
+		$('#items a.add').live('click',function(){
+			that.switch();
+			that.newItem();
+		});
+	},
+	/**
+	 * new item creation
+	*/
+	newItem: function() {
+		
+	},
 	/**
 	 * unbind all events when switching pages
 	*/
@@ -173,5 +241,5 @@ Bucket.prototype = {
 $(function(){
 	var Buck = new Bucket();
 	
-	Buck.buckets();
+	Buck.items();
 });

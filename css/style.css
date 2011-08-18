@@ -360,19 +360,9 @@
 		   Buttons from http://pixify.com/blog/use-os-x-lion-to-improve-your-ui/
 		   ========================================================================== */
 
-
-		.buttons {
-		    background: #ccc;
-		    padding: 20px 10px 10px 20px;
-		    border-radius: 10px;
-		    -webkit-border-radius: 10px;
-		    -moz-border-radius: 10px;
-		    float: left;
-		    margin-bottom: 40px;
-		    width: 830px;
-		}
 		a.button,
 		a.icon {
+			cursor: pointer;
 		    color: #484848;
 		    text-decoration: none;
 		    text-shadow: 0 1px 0 #fff;

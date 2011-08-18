@@ -1,6 +1,11 @@
 <?php
-
 require_once('init.php');
+
+/**
+ * @todo this stays until Google SSO is implemented
+*/
+$_COOKIE['userHandle'] = 'dsp'; 
+
 class BuckServer {
 	private static $es; //elastic search wrapper
 	/**
@@ -290,7 +295,7 @@ class BuckServer {
 					}
 				}
 			break;
-			//get bucket
+			//get item or get all items for the current user
 			case 'get':
 				if ( !empty($r['request'][1]) ) {
 					$item = self::$es->query( 'item', array('q'=>'itemId:'.$r['request'][1] ));
@@ -298,22 +303,35 @@ class BuckServer {
 						return $item->hits->hits[0]->_source;
 					}
 				} else {
-					$_members = self::$es->query( 'member', array('q'=>'_type:member','size'=>BUCK_MAX_SIZE ));
-					if ( $_members->hits->total > 0 ) {
-						$members = array();
-						foreach ( $_members->hits->hits as $member ) {
-							$members[] = $member->_source;
+					//get all buckets the user is in
+					$_buckets = self::$es->query( 'bucket', array('q'=>'_type:bucket AND memberHandles:'.$_COOKIE['userHandle'],'size'=>BUCK_MAX_SIZE ));
+					if ( $_buckets->hits->total > 0 ) {
+						$buckets = array();
+						foreach ( $_buckets->hits->hits as $bucket ) {
+							$buckets[] = $bucket->_source;
 						}
-						return $members;
 					}
+					//get all items from those buckets
+					$items = array();
+					foreach ( $buckets as $bucket ) {
+						$_items = self::$es->query( 'item', array('q'=>'_type:item AND bucketId:'.$bucket->bucketId,'size'=>BUCK_MAX_SIZE ));
+						if ( $_items->hits->total > 0 ) {
+							foreach ( $_items->hits->hits as $item ) {
+								$item = $item->_source;
+								$item->created8601 = date('c', $item->created);
+								$items[] = $item;
+							}
+						}
+					}	
+					return $items;
 				}
 				return -1;
 			break;
-			//delete bucket
+			//delete item
 			case 'delete':
 				if ( !empty($r['request'][1]) ) { 
 					$result = self::$es->delete('item',$r['request'][1]);
-					if ( $result['ok'] == true ) {
+					if ( $result->ok == true ) {
 						return 1;
 					}
 				}

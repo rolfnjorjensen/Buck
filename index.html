@@ -19,7 +19,7 @@
 			<h1>Tradeshift Bucket</h1>
 			<hr class="break" />
 		</div>
-		<div id="buckets" class="sixteen columns">
+		<div id="buckets" class="sixteen columns" style="display: none;">
 			<div class="buckets">
 			</div>
 			<div class="bucket newBucket">
@@ -33,11 +33,32 @@
 				<a class="save button">Add</a>
 			</div>
 		</div>
+		<div id="items" class="sixteen columns">
+			<a class="add button">Add Item</a>
+			<br class="clear" />
+			<div class="sorting">
+				<a class="button">Group by Buckets</a>
+				<a class="button left active">Chronological</a>
+				<a class="button middle">Alphabetical</a>
+				<a class="button right">Random</a>
+			</div>
+			<br class="clear" />
+			<div class="items">
+			</div>
+		</div>
+		<hr class="break" />
+		<div id="footer" class="sixteen columns add-top">
+			<a class="button left bucketMode">Edit Buckets</a>
+			<a class="button middle itemMode">My Items</a>
+			<a class="button right itemAddMode">Add New Item</a>
+			<hr class="break" />
+		</div>
 	</div><!-- container -->
 	
 	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
 	<script>window.jQuery || document.write("<script src='js/jquery-1.6.2.min.js'>\x3C/script>")</script>
 	<script src="js/jquery.tokeninput.js"></script>
+	<script src="js/jquery.timeago.js"></script>
 	<script src="//ajax.microsoft.com/ajax/jquery.templates/beta1/jquery.tmpl.min.js"></script>
 
 	<script src="js/fn.js"></script>
