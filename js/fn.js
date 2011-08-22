@@ -5,12 +5,12 @@ function BucketClient() {
 BucketClient.prototype = {
 	init: function() {
 		this.url = '/api/';
-		console.log( this.authenticate() );
+		this.authenticate();
 	},
 	authenticate: function() {
 		var userHandle = $.cookie('userHandle');
 		if ( userHandle == null ) {
-			window.location.href="/sso.php";
+			window.location.href = '/sso.php';
 		}
 	},
 	request: function(type,method,data,success) {
