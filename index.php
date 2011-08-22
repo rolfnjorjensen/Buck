@@ -240,20 +240,21 @@ class BuckServer {
 			//new item
 			case 'post':
 				$anItem = array();
-				/**
-				 * @todo submitter should be handled through google SSO, not from the json input
-				*/
 				if ( !empty($r['data']['name']) && !empty($r['data']['bucketId']) ) {
 					$anItem['name'] = $r['data']['name'];
 					$anItem['submitter'] = $_SESSION['userHandle'] ;
 					if ( !empty( $r['data']['desc'] ) ) {
 						$anItem['desc'] = $r['data']['desc'];
 					}
-					if ( !empty( $r['data']['hardDeadline'] ) ) {						
-						if ( !is_numeric( $r['data']['hardDeadline'] ) ) {
-							$r['data']['hardDeadline'] = strtotime( $r['data']['hardDeadline'] );
+					if ( !empty( $r['data']['hardDeadline'] ) ) { //if there is a hardDeadline supplied						
+						if ( !is_numeric( $r['data']['hardDeadline'] ) ) { //and it's not numeric
+							$r['data']['hardDeadline'] = strtotime( $r['data']['hardDeadline'] ); //try to get the timestamp
+							if ( $r['data']['hardDeadline'] !== false ) { //if successful
+								$anItem['hardDeadline'] = $r['data']['hardDeadline']; //store it
+							}
+						} else {
+							$anItem['hardDeadline'] = $r['data']['hardDeadline']; //if it's numeric(unix timestamp), simply store it 
 						}
-						$anItem['hardDeadline'] = $r['data']['hardDeadline'];
 					}
 					if ( !empty( $r['data']['bucketId'] ) ) {
 						if ( self::verifyBucketId( $r['data']['bucketId'] ) ) {

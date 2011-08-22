@@ -59,14 +59,16 @@
 			</div>
 			<div id="itemAdd" class="sixteen columns add-top add-bottom" style="display: none;">
 				<h2>Create New Item</h2>
-				<label for="itemName">Name</label>
+				<label for="itemName">Name(*)</label>
 				<input name="itemName" placeholder="New Item's Name" />
 				<label for="itemDesc">Description</label>
 				<input name="itemDesc" placeholder="New Item's Description" />
-				<label for="itemBucket">Bucket</label>
+				<label for="itemBucket">Bucket(*)</label>
 				<select name="itemBucket" class="dynamic"></select>
+				<label for="itemBucket">Hard Deadline (ex: tomorrow, next Tuesday, 2011-08-22T15:01Z, 1314028917, etc)</label>
 				<input name="hardDeadline" type="datetime" placeholder="New Item's Hard Deadline (ex: next tuesday, 2011-08-18 16:20:00, 1313652054, yesterday, etc)" />
 				<a class="save button">Add New Item</a>
+				<span class="help">* = required</span>
 			</div>
 		</div>
 		<hr class="break" />
