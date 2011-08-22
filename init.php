@@ -3,6 +3,8 @@ ini_set('display_errors',1);
 error_reporting( -1 );
 date_default_timezone_set('Europe/Copenhagen');
 
+session_start();
+
 define('BUCK_ID_LEN', 3);
 
 define('BUCK_MAX_SIZE', 50000); //size of queries

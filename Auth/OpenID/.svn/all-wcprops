@@ -1,0 +1,173 @@
+K 25
+svn:wc:ra_dav:version-url
+V 42
+/svn/!svn/ver/109/trunk/hybrid/Auth/OpenID
+END
+Consumer.php
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/!svn/ver/109/trunk/hybrid/Auth/OpenID/Consumer.php
+END
+URINorm.php
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svn/!svn/ver/109/trunk/hybrid/Auth/OpenID/URINorm.php
+END
+FileStore.php
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/!svn/ver/109/trunk/hybrid/Auth/OpenID/FileStore.php
+END
+CryptUtil.php
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/!svn/ver/109/trunk/hybrid/Auth/OpenID/CryptUtil.php
+END
+Interface.php
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/!svn/ver/109/trunk/hybrid/Auth/OpenID/Interface.php
+END
+SReg.php
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/svn/!svn/ver/109/trunk/hybrid/Auth/OpenID/SReg.php
+END
+Nonce.php
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/!svn/ver/109/trunk/hybrid/Auth/OpenID/Nonce.php
+END
+KVForm.php
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/!svn/ver/109/trunk/hybrid/Auth/OpenID/KVForm.php
+END
+DumbStore.php
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/!svn/ver/109/trunk/hybrid/Auth/OpenID/DumbStore.php
+END
+Server.php
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/!svn/ver/109/trunk/hybrid/Auth/OpenID/Server.php
+END
+AX.php
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svn/!svn/ver/109/trunk/hybrid/Auth/OpenID/AX.php
+END
+HMAC.php
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/svn/!svn/ver/109/trunk/hybrid/Auth/OpenID/HMAC.php
+END
+Parse.php
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/!svn/ver/109/trunk/hybrid/Auth/OpenID/Parse.php
+END
+BigMath.php
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svn/!svn/ver/109/trunk/hybrid/Auth/OpenID/BigMath.php
+END
+SQLStore.php
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/!svn/ver/109/trunk/hybrid/Auth/OpenID/SQLStore.php
+END
+Association.php
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/!svn/ver/109/trunk/hybrid/Auth/OpenID/Association.php
+END
+Extension.php
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/!svn/ver/109/trunk/hybrid/Auth/OpenID/Extension.php
+END
+SQLiteStore.php
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/!svn/ver/109/trunk/hybrid/Auth/OpenID/SQLiteStore.php
+END
+Discover.php
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/!svn/ver/109/trunk/hybrid/Auth/OpenID/Discover.php
+END
+ServerRequest.php
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/!svn/ver/109/trunk/hybrid/Auth/OpenID/ServerRequest.php
+END
+PostgreSQLStore.php
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/!svn/ver/109/trunk/hybrid/Auth/OpenID/PostgreSQLStore.php
+END
+MySQLStore.php
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/!svn/ver/109/trunk/hybrid/Auth/OpenID/MySQLStore.php
+END
+MemcachedStore.php
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/!svn/ver/109/trunk/hybrid/Auth/OpenID/MemcachedStore.php
+END
+Message.php
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svn/!svn/ver/109/trunk/hybrid/Auth/OpenID/Message.php
+END
+DatabaseConnection.php
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/!svn/ver/109/trunk/hybrid/Auth/OpenID/DatabaseConnection.php
+END
+PAPE.php
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/svn/!svn/ver/109/trunk/hybrid/Auth/OpenID/PAPE.php
+END
+TrustRoot.php
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/!svn/ver/109/trunk/hybrid/Auth/OpenID/TrustRoot.php
+END
+DiffieHellman.php
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/!svn/ver/109/trunk/hybrid/Auth/OpenID/DiffieHellman.php
+END

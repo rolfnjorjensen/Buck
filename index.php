@@ -1,17 +1,29 @@
 <?php
 require_once('init.php');
 
-/**
- * @todo this stays until Google SSO is implemented
-*/
-$_COOKIE['userHandle'] = 'dsp'; 
-
 class BuckServer {
 	private static $es; //elastic search wrapper
+
+	/**
+	 * Some authentication
+	*/
+	private static function authenticate() {
+		//if session/cookie is empty or not in sync with eachother quit
+		if ( 
+			empty($_SESSION['userHandle']) || 
+			empty($_COOKIE['userHandle']) ||
+			($_SESSION['userHandle'] != $_COOKIE['userHandle']) 
+		) {
+			header("HTTP/1.0 404 Unauthorized");
+			exit;
+		}
+	}
 	/**
 	 * process the incoming REST request
 	*/
 	public static function init() {
+		self::authenticate();
+		
 		global $es;
 		self::$es = $es;
 		
@@ -233,7 +245,7 @@ class BuckServer {
 				*/
 				if ( !empty($r['data']['name']) && !empty($r['data']['bucketId']) ) {
 					$anItem['name'] = $r['data']['name'];
-					$anItem['submitter'] = $_COOKIE['userHandle'];
+					$anItem['submitter'] = $_SESSION['userHandle'] ;
 					if ( !empty( $r['data']['desc'] ) ) {
 						$anItem['desc'] = $r['data']['desc'];
 					}
@@ -305,7 +317,7 @@ class BuckServer {
 					}
 				} else {
 					//get all buckets the user is in
-					$_buckets = self::$es->query( 'bucket', array('q'=>'_type:bucket AND memberHandles:'.$_COOKIE['userHandle'],'size'=>BUCK_MAX_SIZE ));
+					$_buckets = self::$es->query( 'bucket', array('q'=>'_type:bucket AND memberHandles:'.$_SESSION['userHandle'] ,'size'=>BUCK_MAX_SIZE ));
 					if ( $_buckets->hits->total > 0 ) {
 						$buckets = array();
 						foreach ( $_buckets->hits->hits as $bucket ) {
