@@ -14,6 +14,8 @@ class BuckServer {
 			empty($_COOKIE['userHandle']) ||
 			($_SESSION['userHandle'] != $_COOKIE['userHandle']) 
 		) {
+			$_COOKIE['userHandle'] = null;
+			unset($_COOKIE['userHandle']);
 			header("HTTP/1.0 401 Unauthorized");
 			exit;
 		}

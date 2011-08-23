@@ -5,13 +5,9 @@ function BucketClient() {
 BucketClient.prototype = {
 	init: function() {
 		this.url = '/api/';
-		this.authenticate();
 	},
-	authenticate: function() {
-		var userHandle = $.cookie('userHandle');
-		if ( userHandle == null ) {
-			window.location.href = '/sso.php';
-		}
+	redirectToLogin: function() {
+		window.location.href = '/sso.php';
 	},
 	request: function(type,method,data,success) {
 		var that = this;
@@ -20,6 +16,11 @@ BucketClient.prototype = {
 			type: method,
 			success: function(result) {
 				success(JSON.parse(result));
+			},
+			statusCode: {
+				401: function() {
+					that.redirectToLogin();
+				}
 			}
 		};
 		if ( data != null ) {
@@ -64,6 +65,16 @@ BucketUtils.prototype = {
 	refreshTimeago: function() {
 		jQuery.timeago.settings.allowFuture = true;
 		$('abbr.timeago').timeago();
+	},
+	isoDate: function(timestamp){
+		var d = new Date(timestamp);
+		function pad(n){return n<10 ? '0'+n : n}
+		return d.getUTCFullYear()+'-'
+			+ pad(d.getUTCMonth()+1)+'-'
+			+ pad(d.getUTCDate())+'T'
+			+ pad(d.getUTCHours())+':'
+			+ pad(d.getUTCMinutes())+':'
+			+ pad(d.getUTCSeconds())+'Z'
 	}
 };
 
@@ -235,14 +246,17 @@ Bucket.prototype = {
 		var tmplItems = [];
 		for ( var i = 0; i < j; i++ ) {
 			var item = items[i];
-			//get buckets for items into array of objects
+			
+			var decayTime = parseInt(items[i].created,10)+(Math.floor(Math.random()*28+1)*86400);
+			
+			
 			$.extend(item,{
-				bucket: that.assocBuckets[items[i].bucketId]
+				bucket: that.assocBuckets[items[i].bucketId], //get buckets for items into array of objects
+				submitter: that.members[items[i].submitter], //get submitters from members
+				decay8601: that.utils.isoDate(decayTime) //temporary thing
 			});
-			//get submitters from members
-			$.extend(item,{
-				submitter: that.members[items[i].submitter]
-			});
+			
+			
 			tmplItems.push(item);
 		}
 		//tmpl action
@@ -323,7 +337,7 @@ Bucket.prototype = {
 	*/
 	switch: function() {
 		$(document).unbind(); //unbind all events
-		$('.menu .button').removeClass('active'); //reset active buttons
+		$('.menu .button, .menu .icon').removeClass('active'); //reset active buttons
 		$('.dynamic').html(''); //remove all dynamically requested content
 		$('.'+this.tokenInputOptions._className).remove(); //remove tokeninputs
 		$('.pages').children().hide(); //hide all pages
@@ -332,7 +346,12 @@ Bucket.prototype = {
 };
 
 $(function(){
-	var Buck = new Bucket();
+	var userHandle = $.cookie('userHandle');
+	if ( userHandle == null ) {
+		window.location.href = '/sso.php';
+	} else {
+		var Buck = new Bucket();
 	
-	Buck.itemsMode();
+		Buck.itemsMode();
+	}
 });

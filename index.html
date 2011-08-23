@@ -15,16 +15,20 @@
 </head>
 <body>
 	<div class="container">
-		<div id="header" class="sixteen columns add-top">
-			<h1>My Name is Buck...</h1>
-			<!-- and I have a Duck! -->
-			<hr class="break" />
-		</div>
-		<div class="menu sixteen columns add-top add-bottom">
-			<div>
-				<a class="button left bucketsMode">Edit Buckets</a>
-				<a class="button middle active itemsMode">My Items</a>
-				<a class="button right itemAddMode">Add New Item</a>
+		<div id="header">
+			<div class="twelve columns add-top">
+				<h1>Buck</h1>
+				<hr class="break" />
+				<div class="menu add-top add-bottom">
+					<div>
+						<a class="button left bucketsMode">Edit Buckets</a>
+						<a class="button middle active itemsMode">My Items</a>
+						<a class="button right itemAddMode">Add New Item</a>
+					</div>
+				</div>
+			</div>
+			<div class="four columns">
+				<img src="/img/buck.png" alt="This is a leaky buck!" title="This is a leaky buck!" style="width: 220px;"/>
 			</div>
 		</div>	
 		<hr class="break" />
@@ -44,14 +48,24 @@
 				</div>
 			</div>
 			<div id="items" class="sixteen columns add-top add-bottom" style="display: none;">
-				<div class="add">
-					<a class="add button">Add Item</a>
-				</div>
-				<div class="sorting">
-					<a class="button">Group by Buckets</a>
-					<a class="button left">Chronological</a>
-					<a class="button middle">Alphabetical</a>
-					<a class="button right active">Random</a>
+				<input class="search" placeholder="Search for items... (not yet)"/>
+				<br class="clear" />
+				<div class="add-top">
+					<div class="add">
+						<a class="add button">Add Item</a>
+					</div>
+					<div class="sorting">
+						<a class="button">Group by Buckets</a>
+					
+						<a class="button left">Alphabetical</a>
+						<a class="button middle">Status</a>
+						<a class="button middle">Creation Date</a>
+						<a class="button middle">Decaying Date</a>
+						<a class="button right active">Random</a>
+					
+						<a class="button left active">Items for me</a>
+						<a class="button right">Items by me</a>
+					</div>
 				</div>
 				<br class="clear" />
 				<div class="dynamic items">
@@ -71,14 +85,6 @@
 				<span class="help">* = required</span>
 			</div>
 		</div>
-		<hr class="break" />
-		<div class="menu sixteen columns add-top add-bottom">
-			<div>
-				<a class="button left bucketsMode">Edit Buckets</a>
-				<a class="button middle active itemsMode">My Items</a>
-				<a class="button right itemAddMode">Add New Item</a>
-			</div>
-		</div>	
 		<hr class="break" />
 	</div><!-- container -->
 	

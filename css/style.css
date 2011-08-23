@@ -652,9 +652,13 @@ input,select {
 		
 /* items page */
 
-#items > .add {
+#items > div > .add {
 	position: absolute;
 	right: 0;
+}
+#items > input.search {
+	width: 100%;
+	font-size: 18px;
 }
 	
 .itemSide > * {
@@ -681,7 +685,7 @@ input,select {
 	margin-top: 10px;
 }
 .item {
-margin: 20px 0;
+	margin: 20px 0;
 	padding-top: 10px;
 	padding-bottom: 10px;
 	border-radius: 10px;
@@ -698,6 +702,16 @@ margin: 20px 0;
 .item.workedonStatus {
 	background-color: #DDFFDD;
 }
+.itemBar > div {
+	margin-right: 10px;
+	height: 37px;
+	line-height: 37px;
+	color: #444;
+	text-align: center;
+	font-family:"Adelle Light", Georgia, serif; font-size-adjust:0.516; font-weight:200; font-style:normal;
+	background-color: #d1d1d1;
+	border-radius: 10px;
+}
 
 em.time {
 	margin-bottom: 10px;
@@ -710,7 +724,7 @@ em.time strong, em.time strong abbr {
 }
 
 /* menu */
-.menu > div {
+.menu.center > div {
 	margin: 0 auto;
 	width: 300px;
 }
