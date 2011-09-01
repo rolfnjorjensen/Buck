@@ -699,7 +699,8 @@ input,select {
 .item.acceptedStatus {
 	background-color: #DDDDFF;
 }
-.item.workedonStatus {
+/* this is actually "in progressStatus", because of an ugly hack using the .text() value of the option */
+.item.progressStatus {
 	background-color: #DDFFDD;
 }
 .itemBar > div {
@@ -709,8 +710,9 @@ input,select {
 	color: #444;
 	text-align: center;
 	font-family:"Adelle Light", Georgia, serif; font-size-adjust:0.516; font-weight:200; font-style:normal;
-	background-color: #d1d1d1;
 	border-radius: 10px;
+	background-color: transparent;
+	background-color: rgba(255, 255, 255, 1.0);
 }
 
 em.time {

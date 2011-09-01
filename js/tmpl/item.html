@@ -1,4 +1,4 @@
-<div id="item-${itemId}" data-id="${itemId}" class="item {{if status == 1}}incomingStatus{{else status == 2}}acceptedStatus{{else status == 3}}workedonStatus{{/if}}">
+<div id="item-${itemId}" data-id="${itemId}" class="item {{if status == 1}}incomingStatus{{else status == 2}}acceptedStatus{{else status == 3}}progressStatus{{/if}}">
 	<div class="twelve columns offset-by-one alpha itemContent">
 		<h2>${name}</h2>
 		<h3>in ${bucket.name}</h3>
@@ -17,10 +17,10 @@
 	</div>
 	<br class="clear" />
 	<div class="twelve columns offset-by-one alpha itemBar add-top">
-		<div><abbr class="timeago" title="${decay8601}">${decay8601}</abbr> until decay</div>
+		<div class="decayTime" style="background-color:rgba(255,255,255,${opacity});"><abbr class="timeago" title="${decay8601}">${decay8601}</abbr> until decay</div>
 	</div>
 	<div class="two columns omega add-top">
-		<a class="delayDecay icon icon183"><span>I wish I had more time</span></a>
+		<a class="delayDecay button">+1 day</a>
 	</div>
 	<br class="clear" />
 </div>

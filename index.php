@@ -266,9 +266,6 @@ class BuckServer {
 						}
 					}
 					$anItem['created'] = time();
-					/**
-					 * @todo make it date=same time=00:00
-					*/
 					$anItem['decay'] = time()+(ItemDecay::Incoming*86400);
 					$anItem['status'] = ItemStatus::Incoming;
 					$anItem['itemId'] = $itemId = self::nextId('item');
@@ -299,9 +296,6 @@ class BuckServer {
 						}
 						if ( !empty($newItem['status']) ) {
 								$item['status'] = $newItem['status'];
-							/**
-							 * @todo make it date=same time=00:00
-							*/
 							switch ( (int)$item['status'] ) {
 								case 3:
 									$item['decay'] = time()+(ItemDecay::WorkingOn*86400);
@@ -337,7 +331,18 @@ class BuckServer {
 				if ( !empty($r['request'][1]) ) {
 					$item = self::$es->query( 'item', array('q'=>'itemId:'.$r['request'][1] ));
 					if ( $item->hits->total === 1 ) {
-						return $item->hits->hits[0]->_source;
+						$item = $item->hits->hits[0]->_source;
+						/**
+						 * @todo make this 8601 creation into a function
+						*/
+						$item->created8601 = date('c', $item->created);
+						if ( !empty( $item->hardDeadline ) ) {
+							$item->hardDeadline8601 = date('c', $item->hardDeadline);
+						}
+						if ( !empty( $item->decay ) ) {
+							$item->decay8601 = date( 'c', $item->decay );
+						}
+						return $item;
 					}
 				} else {
 					//get all buckets the user is in
@@ -355,6 +360,9 @@ class BuckServer {
 						if ( $_items->hits->total > 0 ) {
 							foreach ( $_items->hits->hits as $item ) {
 								$item = $item->_source;
+								/**
+								 * @todo make this 8601 creation into a function
+								*/
 								$item->created8601 = date('c', $item->created);
 								if ( !empty( $item->hardDeadline ) ) {
 									$item->hardDeadline8601 = date('c', $item->hardDeadline);

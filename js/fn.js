@@ -34,7 +34,7 @@ BucketClient.prototype = {
 	post: function(type,data,success) {
 		this.request(type,'POST',data,success);
 	},
-	get: function(type,success) {
+	get: function(type,data,success) {
 		this.request(type,'GET',null,success);
 	},
 	put: function(type,data,success) {
@@ -54,12 +54,16 @@ BucketUtils.prototype = {
 		this.refreshTimeago();
 	},
 	highlight: function($elem) {
-		$elem.animate({
-			opacity: 0.1
-		},200,function(){
+		$('html, body').animate({
+		    scrollTop: $elem.offset().top
+		}, 200,function() {
 			$elem.animate({
-				opacity: 1
-			},300);
+				opacity: 0.1
+			},200,function(){
+				$elem.animate({
+					opacity: 1
+				},300);
+			});
 		});
 	},
 	refreshTimeago: function() {
@@ -83,7 +87,12 @@ function Bucket() {
 
 Bucket.prototype = {
 	init: function() {
-		$.timeago.settings.allowFuture = true;
+		$.timeago.settings.allowFuture = true; //allow future dates
+		$.timeago.settings.refreshMillis = 10000; //refresh times every 10 seconds
+		/**
+		 * this could be using a /api/settings/ call or something
+		*/
+		this.maxDecayDays = 14;
 		
 		this.client = new BucketClient();
 		
@@ -133,7 +142,7 @@ Bucket.prototype = {
 	refreshData: function() {
 		var that = this;
 		
-		this.client.get('members',function(result){
+		this.client.get('members',null,function(result){
 			that.members = [];
 			
 			result.forEach(function(val,i){
@@ -141,7 +150,7 @@ Bucket.prototype = {
 			});
 		});
 		
-		this.client.get('buckets',function(result){
+		this.client.get('buckets',null,function(result){
 			that.buckets = result;
 			that.assocBuckets = [];
 			
@@ -238,25 +247,38 @@ Bucket.prototype = {
 			});
 		});
 	},
-	drawItems: function(items,success) {
+	drawItems: function(success) {
 		var that = this;
-		var tmplItems = [];
-		items.forEach( function(item,i){
-			var decayTime = parseInt(item.created,10)+(Math.floor(Math.random()*28+1)*86400);
+		
+		this.client.get('items',null,function(result){
+			that.items = result;
+			var tmplItems = [];
+			that.items.forEach( function(item,i){
+				var decayIn = $.timeago(item.decay8601); //timeago plugin will return a string like "4 days from now"
+				var opacity = 1.0;
+				if ( decayIn.indexOf('day') != -1 ) { //if it's day(s) we set the opacity
+					opacity = 1-(parseInt(decayIn,10)/parseInt(that.maxDecayDays,10)); //here we convert the string into an integer, the above example will become 4
+					if ( opacity < 0 ) { //it can be more than max, because of the +1 button, but negative opacity shouldn't be displayed
+						opacity = 0;
+					}
+				}
+				//background-color: rgba(255, 255, 255, 0.0);
+				$.extend(item,{
+					bucket: that.assocBuckets[item.bucketId], //get buckets for items into array of objects
+					submitter: that.members[item.submitter], //get submitters from members
+					opacity: opacity
+				});
 			
-			$.extend(item,{
-				bucket: that.assocBuckets[item.bucketId], //get buckets for items into array of objects
-				submitter: that.members[item.submitter], //get submitters from members
+				tmplItems.push(item);
+			}, this);
+			//tmpl action
+			$.get('/js/tmpl/item.html',function(tmpl){
+				$('.items').html(''); //reset item's display
+				$.tmpl(tmpl,tmplItems).appendTo('.items'); //then quickly add it (i hope this doesn't flicker)
+				that.utils.refreshTimeago();
+				success();
 			});
-			
-			tmplItems.push(item);
-		}, this);
-		//tmpl action
-		$.get('/js/tmpl/item.html',function(tmpl){
-			$.tmpl(tmpl,tmplItems).appendTo('.items');
-			that.utils.refreshTimeago();
 		});
-		success();
 	},
 	/**
 	 * item list
@@ -266,11 +288,8 @@ Bucket.prototype = {
 		
 		this.refreshData();
 		
-		$('#items').show();
-		
-		this.client.get('items',function(result){
-			that.items = result;
-			that.drawItems(that.items,function(){});
+		this.drawItems(function(){
+			$('#items').show();
 		});
 		
 		$('.item a.delete').live('click',function(){
@@ -290,7 +309,9 @@ Bucket.prototype = {
 			var itemId = $item.attr('data-id');
 			var delayDecay = {delayDecay:1};
 			that.client.put('items/'+itemId,delayDecay,function(result){
-				that.utils.highlight($item);
+				that.drawItems(function() {
+					that.utils.highlight($('#item-'+itemId)); //have to reference item by ID, because .items was emptied just a few milliseconds ago
+				});
 			});
 		});
 		
@@ -303,7 +324,18 @@ Bucket.prototype = {
 			that.client.put('items/'+itemId,statusChange,function(result){
 				$item.attr('class','item'); //reset classes of item
 				$item.addClass($select.children().filter(':eq('+(parseInt(newStatusId,10)-1)+')').text().toLowerCase()+'Status'); //set status' class accordingly (acceptedStatus,incomingStatus,etc.)
-				that.utils.highlight($item);
+				/**
+				 * @todo there has to be a way to do this without the timeout
+				*/
+				setTimeout(function() {
+					that.client.get('items/'+itemId,null,function(result){
+						//$item.find('.decayTime abbr').attr('class','').attr('title',result.decay8601).text($.timeago(result.decay8601)).data("timeago",{datetime:$.timeago.parse(result.decay8601)});
+						//that.utils.refreshTimeago();
+						that.drawItems(function(){
+							that.utils.highlight($('#item-'+itemId));
+						});
+					});
+				}, 500);
 			});
 		});
 	},
