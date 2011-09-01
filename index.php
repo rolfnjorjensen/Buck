@@ -378,23 +378,6 @@ class BuckServer {
 				}
 				return -1;
 			break;
-			/**
-			 * adds decay to items without it
-			*/
-			case 'fixdecay':
-				$_items = self::$es->query( 'item', array('q'=>'_type:item','size'=>BUCK_MAX_SIZE ));
-				if ( $_items->hits->total > 0 ) {
-					foreach ( $_items->hits->hits as $item ) {
-						$item = $item->_source;
-						if ( empty( $item->decay ) ) {
-							$item->decay = time()+(ItemDecay::Incoming*86400);
-						}
-						$result = self::$es->add('item',$item,json_encode($item));
-						var_dump( $result );
-					}
-				}
-				return 1;
-			break;
 			//delete item
 			case 'delete':
 				if ( !empty($r['request'][1]) ) { 
