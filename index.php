@@ -361,12 +361,6 @@ class BuckServer {
 							foreach ( $_items->hits->hits as $item ) {
 								$item = $item->_source;
 								/**
-								 * @todo this is only here to remain compatible with the previous db schema
-								*/
-								if ( empty( $item->decay ) ) {
-									$item->decay = time();
-								}
-								/**
 								 * @todo make this 8601 creation into a function
 								*/
 								$item->created8601 = date('c', $item->created);
