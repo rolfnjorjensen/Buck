@@ -254,15 +254,20 @@ Bucket.prototype = {
 			that.items = result;
 			var tmplItems = [];
 			that.items.forEach( function(item,i){
-				var decayIn = $.timeago(item.decay8601); //timeago plugin will return a string like "4 days from now"
 				var opacity = 1.0;
-				if ( decayIn.indexOf('day') != -1 ) { //if it's day(s) we set the opacity
-					opacity = 1-(parseInt(decayIn,10)/parseInt(that.maxDecayDays,10)); //here we convert the string into an integer, the above example will become 4
-					if ( opacity < 0 ) { //it can be more than max, because of the +1 button, but negative opacity shouldn't be displayed
-						opacity = 0;
+				if ( typeof item.decay != 'undefined' ) {
+					var decayIn = $.timeago(item.decay8601); //timeago plugin will return a string like "4 days from now"
+					if ( decayIn.indexOf('day') != -1 ) { //if it's day(s) we set the opacity
+						opacity = 1-(parseInt(decayIn,10)/parseInt(that.maxDecayDays,10)); //here we convert the string into an integer, the above example will become 4
+						if ( opacity < 0 ) { //it can be more than max, because of the +1 button, but negative opacity shouldn't be displayed
+							opacity = 0;
+						}
 					}
+				} else {
+					$.extend(item,{
+						decay: 0, //set decay to 0 if it doesn't exist
+					});
 				}
-				//background-color: rgba(255, 255, 255, 0.0);
 				$.extend(item,{
 					bucket: that.assocBuckets[item.bucketId], //get buckets for items into array of objects
 					submitter: that.members[item.submitter], //get submitters from members
