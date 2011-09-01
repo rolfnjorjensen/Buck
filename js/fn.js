@@ -354,7 +354,8 @@ Bucket.prototype = {
 				name: $('#itemAdd input[name=itemName]').val(),
 				desc: $('#itemAdd input[name=itemDesc]').val(),
 				bucketId: $('#itemAdd select[name=itemBucket]').val(),
-				hardDeadline: $('#itemAdd input[name=hardDeadline]').val()
+				hardDeadline: $('#itemAdd input[name=hardDeadline]').val(),
+				status: 1
 			};
 			$(this).text('Adding...');
 			that.client.post('items',item,function(result){

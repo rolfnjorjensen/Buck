@@ -295,7 +295,7 @@ class BuckServer {
 							$item['desc'] = $newItem['desc'];
 						}
 						if ( !empty($newItem['status']) ) {
-								$item['status'] = $newItem['status'];
+							$item['status'] = $newItem['status'];
 							switch ( (int)$item['status'] ) {
 								case 3:
 									$item['decay'] = time()+(ItemDecay::WorkingOn*86400);
