@@ -9,7 +9,7 @@ if ( $_items->hits->total > 0 ) {
 		if ( empty( $item->decay ) ) {
 			$item->decay = time()+(ItemDecay::Incoming*86400);
 		}
-		$result = $es->add('item',$item,json_encode($item));
+		$result = $es->add('item',$item->itemId,json_encode($item));
 		var_dump( $result );
 	}
 }
