@@ -266,6 +266,10 @@ class BuckServer {
 						}
 					}
 					$anItem['created'] = time();
+					/**
+					 * @todo make it date=same time=00:00
+					*/
+					$anItem['decay'] = time()+(ItemDecay::Incoming*86400);
 					$anItem['status'] = ItemStatus::Incoming;
 					$anItem['itemId'] = $itemId = self::nextId('item');
 					/**
@@ -294,7 +298,24 @@ class BuckServer {
 							$item['desc'] = $newItem['desc'];
 						}
 						if ( !empty($newItem['status']) ) {
-							$item['status'] = $newItem['status'];
+								$item['status'] = $newItem['status'];
+							/**
+							 * @todo make it date=same time=00:00
+							*/
+							switch ( (int)$item['status'] ) {
+								case 3:
+									$item['decay'] = time()+(ItemDecay::WorkingOn*86400);
+								break;
+								case 2:
+									$item['decay'] = time()+(ItemDecay::Accepted*86400);
+								break;
+								case 1:
+									$item['decay'] = time()+(ItemDecay::Incoming*86400);
+								break;
+							}
+						}
+						if ( !empty($newItem['delayDecay']) ) {
+							$item['decay'] += ((int)$newItem['delayDecay'])*86400;
 						}
 						if ( !empty($newItem['hardDeadline']) ) {
 							if ( !is_numeric( $newItem['hardDeadline'] ) ) {
@@ -337,6 +358,9 @@ class BuckServer {
 								$item->created8601 = date('c', $item->created);
 								if ( !empty( $item->hardDeadline ) ) {
 									$item->hardDeadline8601 = date('c', $item->hardDeadline);
+								}
+								if ( !empty( $item->decay ) ) {
+									$item->decay8601 = date( 'c', $item->decay );
 								}
 								$items[] = $item;
 							}

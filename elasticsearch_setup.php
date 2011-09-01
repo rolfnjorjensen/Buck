@@ -41,6 +41,10 @@ $es->map('item','{
 				"type": "integer",
 				"store": "yes"
 			},
+			"decay": {
+				"type": "integer",
+				"store": "yes"
+			},
 			"status": {
 				"type": "integer",
 				"store": "yes"

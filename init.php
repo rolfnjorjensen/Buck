@@ -15,6 +15,15 @@ class ItemStatus {
 	const WorkingOn = 3; 
 }
 
+/**
+ * decay time of the item gets set to time()+([int] days)
+*/
+class ItemDecay {
+	const Incoming = 14;
+	const Accepted = 7;
+	const WorkingOn = 3; 
+}
+
 require_once('elasticsearch.php');
 $es = new ElasticSearch();
 $es->index = 'buck';

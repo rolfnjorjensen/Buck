@@ -63,7 +63,6 @@ BucketUtils.prototype = {
 		});
 	},
 	refreshTimeago: function() {
-		jQuery.timeago.settings.allowFuture = true;
 		$('abbr.timeago').timeago();
 	},
 	isoDate: function(timestamp){
@@ -84,9 +83,9 @@ function Bucket() {
 
 Bucket.prototype = {
 	init: function() {
-		this.client = new BucketClient();
+		$.timeago.settings.allowFuture = true;
 		
-		var that = this;
+		this.client = new BucketClient();
 		
 		this.refreshData();
 		
@@ -135,23 +134,22 @@ Bucket.prototype = {
 		var that = this;
 		
 		this.client.get('members',function(result){
-			var j = result.length;
 			that.members = [];
-			for ( var i = 0; i < j; i++ ) {
-				that.members[result[i].handle] = result[i].name;
-			}
+			
+			result.forEach(function(val,i){
+				that.members[val.handle] = val.name;
+			});
 		});
 		
 		this.client.get('buckets',function(result){
 			that.buckets = result;
-			var j = result.length;
 			that.assocBuckets = [];
-			for ( var i = 0; i < j; i++ ) {
-				that.assocBuckets[result[i].bucketId] = result[i];
-			}
+			
+			result.forEach(function(val,i){
+				that.assocBuckets[val.bucketId] = val;
+			});
 			
 			var $itemBucketSelect = $('#itemAdd select[name=itemBucket]');
-			
 			$.each(that.buckets,function(i,v){
 				$itemBucketSelect.append($('<option/>').val(this.bucketId).text(this.name));
 			});
@@ -165,16 +163,15 @@ Bucket.prototype = {
 		$.get('/js/tmpl/bucket.html',function(tmpl){
 			$.tmpl(tmpl,buckets).appendTo('.buckets');
 			var j = buckets.length;
-			for ( var i = 0; i < j; i++ ) { //iterate through buckets to add their members
-				if ( buckets[i].memberHandles ) {
-					var l = buckets[i].memberHandles.length;
+			buckets.forEach(function(bucket,i){ //iterate through buckets to add their members
+				if ( bucket.memberHandles ) {
 					var prePopulate = [];
-					for ( var k = 0; k < l; k++ ) { //iterate through members to add them to tokeninput prePopulate
+					bucket.memberHandles.forEach(function(memberHandle,k){  //iterate through members to add them to tokeninput prePopulate
 						prePopulate.push({
-							id: buckets[i].memberHandles[k],
-							name: that.members[buckets[i].memberHandles[k]]
+							id: memberHandle,
+							name: that.members[memberHandle]
 						});
-					}
+					});
 					var tokenInputOptions = $.extend({},that.tokenInputOptions,{
 						prePopulate: prePopulate
 					});
@@ -183,7 +180,7 @@ Bucket.prototype = {
 					//buckets without members?! default options for you!
 					$('#bucket-'+buckets[i].bucketId+' .memberHandleTokens').tokenInput(that.tokenInputUrl,that.tokenInputOptions);
 				}
-			}
+			});
 			success();
 		});
 	},
@@ -204,10 +201,11 @@ Bucket.prototype = {
 			var $bucket = $(this).parent();
 			var _memberHandles = $bucket.children('.memberHandleTokens').tokenInput("get");
 			var memberHandles = [];
-			var j = _memberHandles.length;
-			for ( var i = 0; i < j; i++ ) {
-				memberHandles.push( _memberHandles[i].id );
-			}
+			
+			_memberHandles.forEach(function(memberHandle,i){
+				memberHandles.push( memberHandle.id );
+			});
+			
 			var bucket = {
 				'name': $bucket.children('input[name=bucketName]').val(),
 				'desc': $bucket.children('input[name=bucketDesc]').val(),
@@ -242,23 +240,17 @@ Bucket.prototype = {
 	},
 	drawItems: function(items,success) {
 		var that = this;
-		var j = items.length;
 		var tmplItems = [];
-		for ( var i = 0; i < j; i++ ) {
-			var item = items[i];
-			
-			var decayTime = parseInt(items[i].created,10)+(Math.floor(Math.random()*28+1)*86400);
-			
+		items.forEach( function(item,i){
+			var decayTime = parseInt(item.created,10)+(Math.floor(Math.random()*28+1)*86400);
 			
 			$.extend(item,{
-				bucket: that.assocBuckets[items[i].bucketId], //get buckets for items into array of objects
-				submitter: that.members[items[i].submitter], //get submitters from members
-				decay8601: that.utils.isoDate(decayTime) //temporary thing
+				bucket: that.assocBuckets[item.bucketId], //get buckets for items into array of objects
+				submitter: that.members[item.submitter], //get submitters from members
 			});
 			
-			
 			tmplItems.push(item);
-		}
+		}, this);
 		//tmpl action
 		$.get('/js/tmpl/item.html',function(tmpl){
 			$.tmpl(tmpl,tmplItems).appendTo('.items');
@@ -293,11 +285,24 @@ Bucket.prototype = {
 			that.switchToItemAddMode();
 		});
 		
-		$('#items select[name=itemStatus]').live('change',function(){
+		$('a.delayDecay').live('click',function(){
 			var $item = $(this).parent().parent();
 			var itemId = $item.attr('data-id');
-			var statusChange = {status:$(this).val()};
+			var delayDecay = {delayDecay:1};
+			that.client.put('items/'+itemId,delayDecay,function(result){
+				that.utils.highlight($item);
+			});
+		});
+		
+		$('#items select[name=itemStatus]').live('change',function(){
+			var $select = $(this);
+			var $item = $select.parent().parent();
+			var itemId = $item.attr('data-id');
+			var newStatusId = $(this).val();
+			var statusChange = {status:newStatusId};
 			that.client.put('items/'+itemId,statusChange,function(result){
+				$item.attr('class','item'); //reset classes of item
+				$item.addClass($select.children().filter(':eq('+(parseInt(newStatusId,10)-1)+')').text().toLowerCase()+'Status'); //set status' class accordingly (acceptedStatus,incomingStatus,etc.)
 				that.utils.highlight($item);
 			});
 		});

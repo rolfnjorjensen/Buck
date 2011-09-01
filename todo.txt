@@ -1,3 +1,13 @@
 http://code.google.com/apis/accounts/docs/OpenID.html#oauth
 http://googlecodesamples.com/hybrid/
 http://code.google.com/p/gdata-samples/source/browse/#svn/trunk/hybrid
+
+
+list of stuff:
+1) expires
+2) sorting
+3) itemsBy
+4) grouping (micro-data)
+5) backups
+6) slayer
+7) emails (yammer?)
