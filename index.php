@@ -34,13 +34,14 @@ class BuckServer {
 		if ( !empty( $data ) ) {
 			$data = json_decode( $data, true ); //decode json into an associative array
 		}
-		
 		if ( strpos( $_SERVER['REQUEST_URI'], '/' ) === 0 ) {
-			$reqUri = substr( $_SERVER['REQUEST_URI'], 1, strlen( $_SERVER['REQUEST_URI'] )-2 ); //strip "/" from beginning and end
+			$reqUri = parse_url( $_SERVER['REQUEST_URI'], PHP_URL_PATH ); //get the path part, so GET vars don't mess up the parsing
+			$reqUri = substr( $reqUri, 1, strlen( $reqUri )-2 ); //strip "/" from beginning and end
 			$reqUri = explode( '/', $reqUri );
+			
 			array_shift( $reqUri ); //first element is always "api"
 			$reqUri[0] = strtolower($reqUri[0]); //first uri fragment is always lowercase
-			if ( !empty( $reqUri[1] ) ) { //if there is a second one
+			if ( !empty( $reqUri[1] ) ) { //if there is a second one (which is not an actual get param)
 				$reqUri[1] = strtoupper($reqUri[1]); //second is always UPPER
 			}
 		}
@@ -345,18 +346,27 @@ class BuckServer {
 						return $item;
 					}
 				} else {
-					//get all buckets the user is in
-					$_buckets = self::$es->query( 'bucket', array('q'=>'_type:bucket AND memberHandles:'.$_SESSION['userHandle'] ,'size'=>BUCK_MAX_SIZE ));
-					if ( $_buckets->hits->total > 0 ) {
-						$buckets = array();
-						foreach ( $_buckets->hits->hits as $bucket ) {
-							$buckets[] = $bucket->_source;
+					if ( empty( $_GET['filter'] ) || $_GET['filter'] == 'my' ) {
+						//get all buckets the user is in
+						$_buckets = self::$es->query( 'bucket', array('q'=>'_type:bucket AND memberHandles:'.$_SESSION['userHandle'],'size'=>BUCK_MAX_SIZE ));
+						if ( $_buckets->hits->total > 0 ) {
+							$buckets = array();
+							foreach ( $_buckets->hits->hits as $bucket ) {
+								$buckets[] = $bucket->_source;
+							}
 						}
+						$itemQuery = array('q'=>'_type:item AND bucketId:%s','size'=>BUCK_MAX_SIZE );
+					} else if ( !empty( $_GET['filter'] ) && $_GET['filter'] == 'sent' ) {
+						$itemQuery = array('q'=>'_type:item AND submitter:'.$_SESSION['userHandle'],'size'=>BUCK_MAX_SIZE );
+						$buckets = array( 'my name is' => 'Buck' ); //h4x
 					}
 					//get all items from those buckets
 					$items = array();
 					foreach ( $buckets as $bucket ) {
-						$_items = self::$es->query( 'item', array('q'=>'_type:item AND bucketId:'.$bucket->bucketId,'size'=>BUCK_MAX_SIZE ));
+						foreach ( $itemQuery as $key => $val ) {
+							$itemQuery[$key] = @sprintf( $val, $bucket->bucketId ); //this might throw notices if we are not actually filtering for buckets
+						}
+						$_items = self::$es->query( 'item', $itemQuery);
 						if ( $_items->hits->total > 0 ) {
 							foreach ( $_items->hits->hits as $item ) {
 								$item = $item->_source;

@@ -11,8 +11,14 @@ BucketClient.prototype = {
 	},
 	request: function(type,method,data,success) {
 		var that = this;
+		var url = this.url;
+		if ( type.indexOf('?') == -1 ) {
+			url += type+'/';
+		} else {
+			url += type;
+		}
 		var requestParams = {
-			url: that.url+type+'/',
+			url: url,
 			type: method,
 			success: function(result) {
 				success(JSON.parse(result));
@@ -247,10 +253,10 @@ Bucket.prototype = {
 			});
 		});
 	},
-	drawItems: function(success) {
+	drawItems: function(params,success) {
 		var that = this;
 		
-		this.client.get('items',null,function(result){
+		this.client.get('items'+params,null,function(result){
 			that.items = result;
 			var tmplItems = [];
 			that.items.forEach( function(item,i){
@@ -287,7 +293,7 @@ Bucket.prototype = {
 		
 		this.refreshData();
 		
-		this.drawItems(function(){
+		this.drawItems('',function(){
 			$('#items').show();
 		});
 		
@@ -308,7 +314,7 @@ Bucket.prototype = {
 			var itemId = $item.attr('data-id');
 			var delayDecay = {delayDecay:1};
 			that.client.put('items/'+itemId,delayDecay,function(result){
-				that.drawItems(function() {
+				that.drawItems('',function() {
 					that.utils.highlight($('#item-'+itemId)); //have to reference item by ID, because .items was emptied just a few milliseconds ago
 				});
 			});
@@ -330,12 +336,24 @@ Bucket.prototype = {
 					that.client.get('items/'+itemId,null,function(result){
 						//$item.find('.decayTime abbr').attr('class','').attr('title',result.decay8601).text($.timeago(result.decay8601)).data("timeago",{datetime:$.timeago.parse(result.decay8601)});
 						//that.utils.refreshTimeago();
-						that.drawItems(function(){
+						that.drawItems('',function(){
 							that.utils.highlight($('#item-'+itemId));
 						});
 					});
 				}, 500);
 			});
+		});
+		
+		$('#myItems').live('click',function(){
+			that.drawItems('?filter=my',function(){});
+			$('.itemFilter').removeClass('active');
+			$(this).addClass('active');
+		});
+		
+		$('#sentItems').live('click',function(){
+			that.drawItems('?filter=sent',function(){});
+			$('.itemFilter').removeClass('active');
+			$(this).addClass('active');
 		});
 	},
 	/**
